@@ -1,258 +1,91 @@
+# Airflow Sales ETL Pipeline (Portfolio Overview)
 
+## Project Snapshot
+Designed and implemented an end-to-end data engineering pipeline that transforms raw Superstore sales data into an analytics-ready star schema using **Apache Airflow**, **Python**, and **SQLite**.
 
-# Airflow Sales ETL Pipeline 
-
-An end-to-end **ETL + Data Warehouse** project built with **Apache Airflow, Docker, Python, and SQLite** using the Superstore dataset to transform raw sales data into a structured analytical data warehouse.
-
-This project demonstrates how a real-world data engineering pipeline is designed, orchestrated, monitored, and validated using production-style practices.
-
----
-
-##  What this project does
-
-The pipeline:
-
-1. Ingests raw sales data from `include/Superstore.csv`
-2. Cleans and enriches the data with business metrics
-3. Loads it into a **staging table (`sales_data`)**
-4. Builds a **star-schema data warehouse**:
-
-   * Dimensions: `dim_customers`, `dim_products`, `dim_dates`, `dim_location`
-   * Fact: `fact_sales`
-5. Runs **automated data-quality tests** using `pytest`
-
-The main Airflow DAG is:
-
-```
-superstore_data_pipeline_sqlite
-```
+- **Domain:** Retail sales analytics
+- **Pipeline type:** Batch ETL
+- **Orchestration:** Airflow DAG (`superstore_data_pipeline_sqlite`)
+- **Warehouse model:** Star schema (1 fact + 4 dimensions)
 
 ---
 
-##  Architecture Overview
-
-### Data Source & Storage
-
-* **Input:** `include/Superstore.csv`
-* **Warehouse:** `include/superstore.db` (SQLite — created at runtime by Airflow)
-
-> Note: The SQLite warehouse is generated automatically when the DAG runs inside Docker.
+## Business Problem
+Raw sales CSV files are not optimized for analytics. This project builds a repeatable pipeline that standardizes raw records, computes business metrics, and publishes modeled tables for BI-style analysis.
 
 ---
 
-##  Star Schema (Warehouse Design)
+## What I Built
 
-![Star Schema](images/star_schema.png)
+### 1) ETL Orchestration with Airflow
+- Built a DAG that orchestrates staging, dimensional modeling, and fact loading.
+- Designed task dependencies with a parallel dimension build step for better runtime efficiency.
 
-This diagram shows:
+### 2) Transformation Layer
+- Cleaned and standardized raw dataset fields.
+- Engineered derived metrics such as:
+  - `profit_margin`
+  - `discount_amount`
+  - `shipping_duration`
+- Added business classifications (`profit_category`, `sales_tier`) to support richer analysis.
 
-* Central fact table: **`fact_sales`**
-* Surrounding dimensions:
+### 3) Dimensional Warehouse Model
+- **Fact:** `fact_sales`
+- **Dimensions:** `dim_customers`, `dim_products`, `dim_dates`, `dim_location`
+- Enabled analytical joins and easier reporting across customer/product/time/geography axes.
 
-  * `dim_customers`
-  * `dim_products`
-  * `dim_dates`
-  * `dim_location`
-
-### Why this matters
-
-* Separates **business facts (sales, profit, quantity)** from **descriptive attributes (customer, product, date, location)**
-* Enables fast analytics
-* Mirrors industry-standard data warehouse design
-
----
-
-## ⚙️ Airflow Orchestration
-
-### DAG Files
-
-* **`dags/superstore_pipeline_sqlite.py`**
-
-  * Main orchestration DAG controlling the entire workflow
-
-* **`dags/superstore_transformation.py`**
-
-  * Contains reusable transformation functions:
-
-    * `create_dim_customers`
-    * `create_dim_products`
-    * `create_dim_dates`
-    * `create_dim_location`
-    * `create_fact_sales`
+### 4) Data Quality Validation
+- Implemented `pytest` checks to validate:
+  - fact table existence and non-empty load,
+  - key integrity,
+  - invalid numeric values,
+  - duplicate prevention,
+  - dimension relationship consistency.
 
 ---
 
-##  Pipeline Flow (Task Graph)
-
-![Airflow DAG Graph](images/airflow_graph.png)
-
-### Step-by-step execution
-
-1. **process_and_load_data (Extract–Transform–Load)**
-
-   * Reads CSV
-   * Standardizes schema
-   * Parses dates
-   * Creates metrics:
-
-     * `profit_margin`
-     * `discount_amount`
-     * `shipping_duration`
-     * `profit_category`
-     * `sales_tier`
-   * Loads into **staging table `sales_data`**
-
-2. **Build Dimensions (in parallel)**
-
-   * `create_dim_customers`
-   * `create_dim_products`
-   * `create_dim_dates`
-   * `create_dim_location`
-
-3. **Build Fact**
-
-   * `create_fact_sales`
-   * Joins staging with all dimensions
-   * Creates final analytical table **`fact_sales`**
-
-This parallel design improves performance and reflects real production pipelines.
+## Technical Stack
+- **Orchestration:** Apache Airflow
+- **Processing:** Python, Pandas
+- **Storage:** SQLite
+- **Testing:** Pytest
+- **Container Runtime:** Astronomer/Airflow Docker runtime
 
 ---
 
-##  Airflow Grid View (Successful Run)
+## Architecture at a Glance
 
-![Airflow Grid](images/airflow_grid.png)
+1. Source CSV (`include/Superstore.csv`) ingested to staging table (`sales_data`)  
+2. Dimension tables created from staged data  
+3. Fact table assembled by joining staging with dimensions  
+4. Data quality assertions executed post-load
 
-The grid view confirms that:
-
-* Staging completed
-* All dimension tables were built
-* Fact table was created successfully
-
----
-
-##  SQLite Warehouse Output
-
-![SQLite Tables](images/sqlite_tables.png)
-
-After the DAG runs, your warehouse contains:
-
-```
-sales_data  
-dim_customers  
-dim_products  
-dim_dates  
-dim_location  
-fact_sales   (~9,986 rows)  
-```
-
-Inspect inside Docker:
-
-```bash
-docker compose exec airflow-webserver sqlite3 /opt/airflow/include/superstore.db
-.tables
-SELECT COUNT(*) FROM fact_sales;
-```
+Assets in repository:
+- DAG graph: `airflow_graph.png`
+- Star schema: `star_schema.png`
+- Table snapshot: `sqlite_tables.png`
 
 ---
 
-## 🛠️ Tech Stack
-
-* **Apache Airflow** — workflow orchestration
-* **Docker** — containerized runtime
-* **Python & Pandas** — data transformation
-* **SQLAlchemy + sqlite3** — DB access
-* **SQLite** — lightweight analytical warehouse
-* **Pytest** — automated data validation
+## Measurable Output (Current Repo Snapshot)
+- `fact_sales`: **9,986** rows
+- `dim_customers`: **793** rows
+- `dim_products`: **1,862** rows
+- `dim_dates`: **1,037** rows
+- `dim_location`: **1,264** rows
 
 ---
 
-## 📂 Repository Structure
-
-```
-.
-├── dags/
-│   ├── superstore_pipeline_sqlite.py
-│   ├── superstore_transformation.py
-│   └── exampledag.py
-├── include/
-│   ├── Superstore.csv
-│   └── superstore.db   # created at runtime
-├── model/
-│   ├── sales_data.py
-│   ├── dim_customers.py
-│   ├── dim_products.py
-│   ├── dim_dates.py
-│   ├── dim_location.py
-│   └── fact_sales.py
-├── tests/
-│   ├── dags/test_dag_example.py
-│   └── test_data_quality.py
-├── images/
-├── Dockerfile
-├── requirements.txt
-└── README.md
-```
+## Why This Project Is Valuable
+- Demonstrates practical understanding of **ETL lifecycle design**.
+- Applies **dimensional modeling** patterns used in analytics engineering.
+- Shows **workflow orchestration** and dependency management in Airflow.
+- Includes **automated quality checks**, not just one-time scripting.
 
 ---
 
-## ▶️ How to Run (Docker — Recommended)
-
-Start Airflow:
-
-```bash
-docker compose up
-```
-
-Open UI:
-
-```
-http://localhost:8080
-```
-
-Trigger DAG:
-
-```
-superstore_data_pipeline_sqlite
-```
-
----
-
-## 🧪 Data Quality Tests
-
-Tests are in:
-
-```
-tests/test_data_quality.py
-```
-
-They check:
-
-* `fact_sales` exists and is populated
-* No missing critical keys
-* No negative sales
-* No non-positive quantity
-* No duplicate `order_product_id`
-* Every sale has a valid customer
-
-Run all tests:
-
-```bash
-pytest -q
-```
-
-Run only data quality tests:
-
-```bash
-pytest -q tests/test_data_quality.py
-```
-
----
-
-## 🚀 Future Improvements
-
-* Migrate SQLite → PostgreSQL / Snowflake
-* Add incremental loads
-* Add dbt layer
-* Add Power BI / Tableau dashboard
-* Add CI pipeline for automated testing
+## Repository Entry Points
+- Main DAG: `dags/superstore_pipeline_sqlite.py`
+- Transform functions: `dags/superstore_transformation.py`
+- Quality tests: `tests/test_data_quality.py`
+- Full technical README: `README.md`
