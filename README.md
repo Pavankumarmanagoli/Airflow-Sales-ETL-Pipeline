@@ -8,7 +8,6 @@ This repository demonstrates how to:
 - load a warehouse-ready star schema,
 - and validate output quality with automated tests.
 
-For portfolio/recruiter review, see **[README_PORTFOLIO.md](README_PORTFOLIO.md)**.
 
 ---
 
@@ -216,3 +215,4 @@ pytest -q
 - No non-positive quantities.
 - No duplicate `order_product_id` in fact table.
 - Every fact row has a valid customer dimension match.
+
