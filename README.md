@@ -1,4 +1,4 @@
-# Airflow Sales ETL Pipeline (Portfolio Overview)
+# Airflow Sales ETL Pipeline 
 
 ## Project Snapshot
 Designed and implemented an end-to-end data engineering pipeline that transforms raw Superstore sales data into an analytics-ready star schema using **Apache Airflow**, **Python**, and **SQLite**.
@@ -89,3 +89,4 @@ Assets in repository:
 - Transform functions: `dags/superstore_transformation.py`
 - Quality tests: `tests/test_data_quality.py`
 - Full technical README: `README.md`
+
