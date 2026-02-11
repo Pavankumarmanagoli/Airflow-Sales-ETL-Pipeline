@@ -92,30 +92,7 @@ Airflow-data-pipeline/
     ├── airflow_task_duration_chart.png
     ├── star_schema.png
     └── sqlite_tables.png
-'
-
----
-
-##  How to Run
-
-How to Run the Project
-Step 1 — Start WSL
-wsl
-Step 2 — Navigate to project
-cd ~/Airflow-data-pipeline
-Step 3 — Start Docker containers
-docker compose up -d
-Step 4 — Open Airflow UI
-http://localhost:8080
-Step 5 — Enable and Trigger DAG
-
-Find: superstore_data_pipeline_sqlite
-
-Toggle ON
-
-Click ▶️ Run
-
----
+```
 
 ## 🛠️ Tech Stack
 
@@ -141,4 +118,5 @@ Click ▶️ Run
 
 
 This repository is licensed under the terms in `MIT LICENSE`.
+
 
