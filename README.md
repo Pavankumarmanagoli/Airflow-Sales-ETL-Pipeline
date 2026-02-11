@@ -1,11 +1,9 @@
-# 🚀 Superstore Data Engineering Pipeline
+# 🚀 Airflow-Sales-ETL-Pipeline
 
-### Apache Airflow + Docker + SQLite Star Schema
 
-An end-to-end Data Engineering project that builds a production-style
-ETL pipeline using **Apache Airflow**, **Docker**, **WSL**, and
-**SQLite**, transforming raw transactional CSV data into a dimensional
-**Star Schema** data warehouse.
+An end-to-end Data Engineering project that implements a production-style ETL pipeline using Apache Airflow and Docker, transforming raw transactional CSV data into an analytics-ready Star Schema data warehouse in SQLite.
+
+This project demonstrates how batch data pipelines are designed, orchestrated, modeled, validated, and made reproducible for real-world analytics use cases.
 
 ---
 
@@ -21,28 +19,17 @@ This project demonstrates how raw business data (CSV) can be:
 
 ---
 
-## Airflow View 
-1. Airflow DAG Graph View
-![Airflow DAG Graph View](images/airflow_graph.png)
-
-2. Airflow Performance Metrics
-![Airflow Performance Metrics](images/airflow_task_duration_charts.png)
-
----
-
 ## 🏗️ Architecture
 ![Architecture](images/Architecture.png)
 
 ---
 
-## 📊 Airflow DAG Flow
+## Airflow View 
+1. Airflow DAG Graph View
+![Airflow DAG Graph View](images/airflow_graph.png)
 
-1.  process_and_load_data\
-2.  create_dim_products\
-3.  create_dim_customers\
-4.  create_dim_dates\
-5.  create_dim_location\
-6.  create_fact_sales
+2. Airflow Performance Metrics
+![Airflow Performance Metrics](images/airflow_task_duration_chart.png)
 
 ---
 
@@ -59,11 +46,8 @@ discount_amount - shipping_duration - profit_category - sales_tier
 ### Dimension Tables
 
 **dim_customers** - customer_id - customer_name - segment
-
 **dim_products** - product_id - category - sub_category - product_name
-
 **dim_dates** - year - quarter - month - day
-
 **dim_location** - country - state - city - region
 
 ---
@@ -94,12 +78,6 @@ discount_amount - shipping_duration - profit_category - sales_tier
 
 ## 🗄️ Database Verification
 
-Example:
-
-SELECT COUNT(\*) FROM fact_sales;
-
-Result: 9986 rows
-
 SQLite Tables View and Fact Table Query Result
 ![SQLite Tables](images/sqlite_tables.png)
 
@@ -120,31 +98,34 @@ Airflow-data-pipeline/
 ├── docker-compose.yml
 ├── requirements.txt
 └── README.md
-└── screenshots/
-    ├── 01_airflow_dag_graph.png
-    ├── 02_airflow_performance_metrics.png
-    ├── 03_sqlite_tables.png
-    ├── 04_fact_sales_query.png
+└── images/
+    ├── Architecture.png
+    ├── airflow_graph.png
+    ├── airflow_task_duration_chart.png
+    ├── star_schema.png
+    ├── sqlite_tables.png
 
 
 ---
 
-## ⚙️ How to Run
+##  How to Run
 
-1.  Start WSL\
-    wsl
+How to Run the Project
+Step 1 — Start WSL
+wsl
+Step 2 — Navigate to project
+cd ~/Airflow-data-pipeline
+Step 3 — Start Docker containers
+docker compose up -d
+Step 4 — Open Airflow UI
+http://localhost:8080
+Step 5 — Enable and Trigger DAG
 
-2.  Navigate to project\
-    cd \~/Airflow-data-pipeline
+Find: superstore_data_pipeline_sqlite
 
-3.  Start containers\
-    docker compose up -d
+Toggle ON
 
-4.  Open Airflow UI\
-    http://localhost:8080
-
-5.  Enable and trigger DAG\
-    superstore_data_pipeline_sqlite
+Click ▶️ Run
 
 ---
 
@@ -163,14 +144,12 @@ Airflow-data-pipeline/
 ## 🚀 Future Improvements
 
 -   Replace SQLite with PostgreSQL
--   Add Data Quality Checks
--   Add Unit Testing
 -   Implement Incremental Loads
--   Add CI/CD Pipeline
 -   Deploy to Cloud
 
 ---
 
 ## License
+
 
 This repository is licensed under the terms in `MIT LICENSE`.
