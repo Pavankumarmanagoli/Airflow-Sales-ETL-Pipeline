@@ -39,7 +39,7 @@ This project demonstrates how raw business data (CSV) can be:
 
 ---
 
-## 🔄 ETL Workflow
+##  ETL Workflow
 
 ### Extract
 
@@ -63,7 +63,7 @@ This project demonstrates how raw business data (CSV) can be:
 
 ---
 
-## 🗄️ Database Verification
+##  Database Verification
 
 SQLite Tables View and Fact Table Query Result
 ![SQLite Tables](images/sqlite_tables.png)
@@ -118,6 +118,7 @@ Airflow-data-pipeline/
 
 
 This repository is licensed under the terms in `MIT LICENSE`.
+
 
 
 
