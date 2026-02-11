@@ -1,4 +1,4 @@
-# 🚀 Airflow-Sales-ETL-Pipeline
+#  Airflow-Sales-ETL-Pipeline
 
 
 An end-to-end Data Engineering project that implements a production-style ETL pipeline using Apache Airflow and Docker, transforming raw transactional CSV data into an analytics-ready Star Schema data warehouse in SQLite.
@@ -7,7 +7,7 @@ This project demonstrates how batch data pipelines are designed, orchestrated, m
 
 ---
 
-## 📌 Project Overview
+##  Project Overview
 
 This project demonstrates how raw business data (CSV) can be:
 
@@ -19,7 +19,7 @@ This project demonstrates how raw business data (CSV) can be:
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 ![Architecture](images/Architecture.png)
 
 ---
@@ -33,7 +33,7 @@ This project demonstrates how raw business data (CSV) can be:
 
 ---
 
-## 🧠 Data Modeling (Star Schema)
+##  Data Modeling (Star Schema)
 
 ![Star Schema](images/star_schema.png)
 
@@ -70,7 +70,7 @@ SQLite Tables View and Fact Table Query Result
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```bash
 Airflow-data-pipeline/
@@ -94,7 +94,7 @@ Airflow-data-pipeline/
     └── sqlite_tables.png
 ```
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 -   Apache Airflow
 -   Docker
@@ -106,7 +106,7 @@ Airflow-data-pipeline/
 
 ---
 
-## 🚀 Future Improvements
+##  Future Improvements
 
 -   Replace SQLite with PostgreSQL
 -   Implement Incremental Loads
@@ -118,5 +118,6 @@ Airflow-data-pipeline/
 
 
 This repository is licensed under the terms in `MIT LICENSE`.
+
 
 
