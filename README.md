@@ -216,3 +216,4 @@ pytest -q
 - No duplicate `order_product_id` in fact table.
 - Every fact row has a valid customer dimension match.
 
+
