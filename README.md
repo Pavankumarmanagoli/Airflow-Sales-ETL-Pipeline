@@ -37,19 +37,6 @@ This project demonstrates how raw business data (CSV) can be:
 
 ![Star Schema](images/star_schema.png)
 
-### Fact Table: fact_sales
-
-Contains: - order_id - customer_key - product_key - date_key -
-location_key - sales - quantity - discount - profit - profit_margin -
-discount_amount - shipping_duration - profit_category - sales_tier
-
-### Dimension Tables
-
-**dim_customers** - customer_id - customer_name - segment
-**dim_products** - product_id - category - sub_category - product_name
-**dim_dates** - year - quarter - month - day
-**dim_location** - country - state - city - region
-
 ---
 
 ## 🔄 ETL Workflow
@@ -85,6 +72,7 @@ SQLite Tables View and Fact Table Query Result
 
 ## 📂 Project Structure
 
+```bash
 Airflow-data-pipeline/
 │
 ├── dags/
@@ -97,14 +85,14 @@ Airflow-data-pipeline/
 │
 ├── docker-compose.yml
 ├── requirements.txt
-└── README.md
+├── README.md
 └── images/
     ├── Architecture.png
     ├── airflow_graph.png
     ├── airflow_task_duration_chart.png
     ├── star_schema.png
-    ├── sqlite_tables.png
-
+    └── sqlite_tables.png
+'
 
 ---
 
@@ -153,3 +141,4 @@ Click ▶️ Run
 
 
 This repository is licensed under the terms in `MIT LICENSE`.
+
