@@ -1,219 +1,176 @@
-# Airflow Sales ETL Pipeline
+# 🚀 Superstore Data Engineering Pipeline
 
-A production-style **ETL + dimensional modeling** project built with **Apache Airflow**, **Python**, and **SQLite**, using the Superstore dataset as a source.
+### Apache Airflow + Docker + SQLite Star Schema
 
-This repository demonstrates how to:
-- ingest raw sales data,
-- apply transformation logic and derived business metrics,
-- load a warehouse-ready star schema,
-- and validate output quality with automated tests.
-
+An end-to-end Data Engineering project that builds a production-style
+ETL pipeline using **Apache Airflow**, **Docker**, **WSL**, and
+**SQLite**, transforming raw transactional CSV data into a dimensional
+**Star Schema** data warehouse.
 
 ---
 
-## 1) Project Overview
+## 📌 Project Overview
 
-### Objective
-Build an orchestrated data pipeline that transforms `Superstore.csv` into a query-ready analytical model.
+This project demonstrates how raw business data (CSV) can be:
 
-### Core Workflow
-1. Load source CSV into a staging table (`sales_data`).
-2. Build dimension tables:
-   - `dim_customers`
-   - `dim_products`
-   - `dim_dates`
-   - `dim_location`
-3. Build the fact table (`fact_sales`) by joining staging records to dimensions.
-4. Validate key quality rules with `pytest`.
-
-### Main DAG
-- **DAG ID:** `superstore_data_pipeline_sqlite`
-- **Definition file:** `dags/superstore_pipeline_sqlite.py`
+-   Extracted
+-   Cleaned and transformed
+-   Modeled into Fact & Dimension tables
+-   Orchestrated using Apache Airflow
+-   Stored in a SQLite data warehouse
 
 ---
 
-## 2) Data Source and Target
+## Airflow View 
+1. Airflow DAG Graph View
+![Airflow DAG Graph View](images/airflow_graph.png)
 
-### Input
-- `include/Superstore.csv`
-- File contains **9,994** source rows and standard sales attributes (order, customer, product, location, and financial fields).
-
-### Output Warehouse
-- `include/superstore.db` (SQLite)
-- Tables created/populated by DAG tasks:
-  - `sales_data` (staging)
-  - `dim_customers`
-  - `dim_products`
-  - `dim_dates`
-  - `dim_location`
-  - `fact_sales`
-
-> Note: In this repository snapshot, `superstore.db` is present for convenience. In normal operation, it is produced/refreshed by pipeline execution.
+2. Airflow Performance Metrics
+![Airflow Performance Metrics](images/airflow_task_duration_charts.png)
 
 ---
 
-## 3) Transformation Logic
-
-The staging task (`process_and_load_data`) performs:
-- column cleanup (`Row ID` dropped if present),
-- null handling (`Postal Code` fallback),
-- date parsing (`Order Date`, `Ship Date`),
-- derived metrics:
-  - `Profit Margin`
-  - `Discount Amount`
-  - `Shipping Duration`
-- business buckets:
-  - `Profit Category` (`Loss`, `Low Profit`, `High Profit`)
-  - `Sales Tier` (`Low`, `Medium`, `High`)
-- date decomposition:
-  - `Year`, `Quarter`, `Month`, `Day`
-- duplicate prevention via `order_product_id = order_id + '_' + product_id`.
-
-Dimension and fact builders are implemented in `dags/superstore_transformation.py` and execute after staging.
+## 🏗️ Architecture
+![Architecture](images/Architecture.png)
 
 ---
 
-## 4) Data Model (Star Schema)
+## 📊 Airflow DAG Flow
 
-The warehouse follows a classic star schema:
-- **Fact table:** `fact_sales`
-- **Dimension tables:** `dim_customers`, `dim_products`, `dim_dates`, `dim_location`
-
-Schema diagram:
-
-![Star Schema](star_schema.png)
-
-This design separates measurable events (sales/profit/quantity) from descriptive entities (customer/product/date/location), improving analytical usability.
+1.  process_and_load_data\
+2.  create_dim_products\
+3.  create_dim_customers\
+4.  create_dim_dates\
+5.  create_dim_location\
+6.  create_fact_sales
 
 ---
 
-## 5) Pipeline Orchestration in Airflow
+## 🧠 Data Modeling (Star Schema)
 
-Task graph:
-1. `process_and_load_data`
-2. Parallel dimension build:
-   - `create_dim_customers`
-   - `create_dim_products`
-   - `create_dim_dates`
-   - `create_dim_location`
-3. `create_fact_sales`
+![Star Schema](images/star_schema.png)
 
-DAG dependency pattern:
+### Fact Table: fact_sales
 
-`staging >> [all dimensions in parallel] >> fact`
+Contains: - order_id - customer_key - product_key - date_key -
+location_key - sales - quantity - discount - profit - profit_margin -
+discount_amount - shipping_duration - profit_category - sales_tier
 
-DAG visualization (from this repo):
+### Dimension Tables
 
-![Airflow DAG Graph](airflow_graph.png)
+**dim_customers** - customer_id - customer_name - segment
 
----
+**dim_products** - product_id - category - sub_category - product_name
 
-## 6) Current Warehouse Snapshot
+**dim_dates** - year - quarter - month - day
 
-From the included SQLite file (`include/superstore.db`):
-- `sales_data`: 19,972 rows
-- `dim_customers`: 793 rows
-- `dim_products`: 1,862 rows
-- `dim_dates`: 1,037 rows
-- `dim_location`: 1,264 rows
-- `fact_sales`: 9,986 rows
-
-SQLite table preview image:
-
-![SQLite Tables](sqlite_tables.png)
+**dim_location** - country - state - city - region
 
 ---
 
-## 7) Repository Structure
+## 🔄 ETL Workflow
 
-```text
-.
+### Extract
+
+-   Load Superstore.csv
+-   Parse date fields
+-   Validate schema
+
+### Transform
+
+-   Profit margin calculation
+-   Shipping duration calculation
+-   Discount amount calculation
+-   Sales tier classification
+-   Normalize into dimension tables
+
+### Load
+
+-   Insert into staging table
+-   Create dimension tables
+-   Build fact table with relationships
+
+---
+
+## 🗄️ Database Verification
+
+Example:
+
+SELECT COUNT(\*) FROM fact_sales;
+
+Result: 9986 rows
+
+SQLite Tables View and Fact Table Query Result
+![SQLite Tables](images/sqlite_tables.png)
+
+---
+
+## 📂 Project Structure
+
+Airflow-data-pipeline/
+│
 ├── dags/
-│   ├── superstore_pipeline_sqlite.py      # Main ETL + orchestration DAG
-│   ├── superstore_transformation.py       # Dimension/fact build functions
-│   └── exampledag.py                      # Example Astronomer DAG
+│   ├── superstore_pipeline_sqlite.py
+│   └── superstore_transformation.py
+│
 ├── include/
-│   ├── Superstore.csv                     # Raw source data
-│   └── superstore.db                      # SQLite warehouse
-├── model/                                 # Quick query scripts for each table
-│   ├── sales_data.py
-│   ├── dim_customers.py
-│   ├── dim_products.py
-│   ├── dim_dates.py
-│   ├── dim_location.py
-│   └── fact_sales.py
-├── tests/
-│   ├── test_data_quality.py               # Warehouse/data assertions
-│   └── dags/test_dag_example.py           # DAG import/tag/retry checks
-├── Dockerfile
+│   ├── Superstore.csv
+│   └── superstore.db
+│
+├── docker-compose.yml
 ├── requirements.txt
-├── packages.txt
 └── README.md
-```
+└── screenshots/
+    ├── 01_airflow_dag_graph.png
+    ├── 02_airflow_performance_metrics.png
+    ├── 03_sqlite_tables.png
+    ├── 04_fact_sales_query.png
+
 
 ---
 
-## 8) Prerequisites
+## ⚙️ How to Run
 
-Choose one execution approach:
+1.  Start WSL\
+    wsl
 
-### Option A: Astronomer Runtime (recommended)
-- Docker installed
-- Astro CLI installed
+2.  Navigate to project\
+    cd \~/Airflow-data-pipeline
 
-### Option B: Local Python + Airflow
-- Python 3.9+
-- Apache Airflow environment configured manually
-- Dependencies from your Airflow setup
+3.  Start containers\
+    docker compose up -d
 
-> The provided `Dockerfile` is based on `quay.io/astronomer/astro-runtime:12.7.0`.
+4.  Open Airflow UI\
+    http://localhost:8080
 
----
-
-## 9) How to Run
-
-### Using Astro CLI
-
-```bash
-astro dev start
-```
-
-Then open Airflow at:
-
-```text
-http://localhost:8080
-```
-
-Trigger DAG:
-
-```text
-superstore_data_pipeline_sqlite
-```
-
-### Validate Warehouse Manually (SQLite)
-
-```bash
-sqlite3 include/superstore.db
-.tables
-SELECT COUNT(*) FROM fact_sales;
-```
+5.  Enable and trigger DAG\
+    superstore_data_pipeline_sqlite
 
 ---
 
-## 10) Testing and Data Quality
+## 🛠️ Tech Stack
 
-### Run tests
+-   Apache Airflow
+-   Docker
+-   WSL
+-   SQLite
+-   Pandas
+-   SQLAlchemy
+-   Python
 
-```bash
-pytest -q
-```
+---
 
-### What is validated
-- `fact_sales` exists and is populated.
-- No nulls in critical identifiers.
-- No negative sales.
-- No non-positive quantities.
-- No duplicate `order_product_id` in fact table.
-- Every fact row has a valid customer dimension match.
+## 🚀 Future Improvements
 
+-   Replace SQLite with PostgreSQL
+-   Add Data Quality Checks
+-   Add Unit Testing
+-   Implement Incremental Loads
+-   Add CI/CD Pipeline
+-   Deploy to Cloud
 
+---
+
+## License
+
+This repository is licensed under the terms in `MIT LICENSE`.
